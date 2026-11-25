@@ -1,48 +1,154 @@
-# Intent-IQ 🤖
-### Multilingual Intent Classification for Hinglish and Indian Languages
+# Intent-IQ: Multilingual Intent Classification
 
-Intent-IQ is a machine learning project designed to identify the intent behind user queries written in English, Hindi, and Hinglish.
+A multilingual intent classification system designed to understand user queries in English, Hindi, and Hinglish using a hybrid machine learning approach.
 
-The project uses natural language processing and machine learning techniques to classify text into **56 different intent categories**. It aims to provide fast and efficient intent recognition for conversational AI applications.
+Intent-IQ combines a transformer-based language model with traditional machine learning to improve intent recognition across multilingual and code-mixed text.
 
----
+## Project Overview
 
-## 🚀 Project Overview
-
-Understanding user intent is an important part of building intelligent chatbots and conversational systems.
-
-Intent-IQ takes a user query as input and predicts the most likely intent category.
+Intent classification is a Natural Language Understanding (NLU) task that identifies the intention behind a user's input.
 
 For example:
 
 | User Query | Predicted Intent |
 |---|---|
-| "What's the weather today?" | Weather-related intent |
-| "Mujhe music sunna hai" | Music-related intent |
-| "Set an alarm for 7 AM" | Alarm-related intent |
+| Play my favorite song | Play Music |
+| Mujhe alarm set karna hai | Set Alarm |
+| What is the weather today? | Get Weather |
+| Call my mother | Make a Call |
 
-The examples above illustrate the task; exact intent labels depend on the dataset.
+The system is designed to handle multilingual and code-mixed queries, including Romanized Hindi and Hinglish.
 
----
+## Model Architecture
 
-## 🧠 Model Architecture
+The final system uses a hybrid ensemble consisting of:
 
-The final inference pipeline uses:
+- **MuRIL** — Multilingual Representations for Indian Languages, a transformer model designed to support Indian languages and their variations.
+- **TF-IDF** — Word and character-based text feature extraction.
+- **Linear SVM** — A Support Vector Machine classifier trained on TF-IDF features.
 
-**Word + Character TF-IDF → Linear Support Vector Machine (SVM)**
+The predictions from the MuRIL and TF-IDF + SVM models are combined to produce the final intent classification.
 
-### Pipeline
+### Architecture
 
-1. Text preprocessing and normalization
-2. Word-level TF-IDF feature extraction
-3. Character-level TF-IDF feature extraction
-4. Linear SVM classification
-5. Intent prediction
+```text
+              User Query
+                  |
+          Text Preprocessing
+                  |
+          +-------+--------+
+          |                |
+      MuRIL Model      TF-IDF Vectorizer
+          |                |
+   Transformer Output    Feature Vectors
+          |                |
+   MuRIL Prediction      Linear SVM
+          |                |
+          +-------+--------+
+                  |
+           Ensemble Fusion
+                  |
+         Final Intent Class
+```
 
-### Why this approach?
+## Model Performance
 
-- Lightweight and efficient
-- Fast inference
-- Suitable for multilingual and Romanized text
-- Character n-grams can help handle spelling variations
-- Does not# theash
+The final ensemble achieved the following result on the local holdout validation dataset:
+
+| Metric | Result |
+|---|---:|
+| Holdout Macro-F1 Score | **0.8499** |
+| Number of Intent Classes | 56 |
+| Approximate Model Parameters | **248 Million** |
+| Model Type | MuRIL + TF-IDF + SVM Ensemble |
+
+The Macro-F1 score evaluates performance across all intent classes, giving equal importance to each class.
+
+The reported score is from local holdout validation and should not be interpreted as the official competition leaderboard score.
+
+## Dataset
+
+The dataset contains multilingual user queries labelled with their corresponding intent classes.
+
+The training data includes:
+
+- English queries
+- Hindi queries
+- Romanized Hindi
+- Hinglish and code-mixed queries
+
+The dataset is used to train and evaluate the intent classification models.
+
+## Technologies Used
+
+- Python
+- PyTorch
+- Hugging Face Transformers
+- MuRIL
+- Scikit-learn
+- TF-IDF
+- Linear Support Vector Machine
+- Pandas
+- NumPy
+- Google Colab
+
+## Project Workflow
+
+1. Load and inspect the multilingual intent dataset.
+2. Clean and preprocess the text.
+3. Split the dataset into training and validation sets.
+4. Train the TF-IDF + SVM classifier.
+5. Fine-tune the MuRIL transformer model.
+6. Evaluate both models using Macro-F1.
+7. Combine the model predictions using ensemble fusion.
+8. Evaluate the final ensemble on the holdout validation set.
+9. Generate predictions for the competition test dataset.
+
+## Inference
+
+The system accepts a user query and predicts its corresponding intent class.
+
+Example:
+
+```python
+query = "play my favorite song"
+
+predicted_intent = predict_intent(query)
+
+print(predicted_intent)
+```
+
+The final prediction is generated using the ensemble of MuRIL and TF-IDF + SVM.
+
+## Model Size
+
+The combined model has approximately **248 million parameters**, keeping it within the project's 300-million-parameter limit.
+
+The parameter count refers to the neural model components. TF-IDF vocabulary and SVM support vectors are additional model artifacts and are not counted as neural network parameters.
+
+## Applications
+
+Intent-IQ can be used in:
+
+- Multilingual virtual assistants
+- Voice-controlled applications
+- Smart device interfaces
+- Conversational AI systems
+- Natural Language Understanding pipelines
+- Intent-based chatbot systems
+
+## Future Improvements
+
+- Improve performance on low-resource intent classes.
+- Explore additional multilingual data augmentation.
+- Optimize ensemble weights using validation data.
+- Improve inference efficiency.
+- Deploy the model through a user-friendly web interface.
+
+## Conclusion
+
+Intent-IQ demonstrates how transformer-based language understanding and traditional machine learning can be combined to build a robust multilingual intent classification system.
+
+The final MuRIL + TF-IDF + SVM ensemble achieved a **0.8499 holdout Macro-F1 score** with an approximate model size of **248 million parameters**.
+
+The project highlights the potential of hybrid machine learning architectures for multilingual and code-mixed Natural Language Understanding.
