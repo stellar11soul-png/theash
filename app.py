@@ -95,8 +95,22 @@ def build_ui(clf):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--bundle", default=os.environ.get("BUNDLE_DIR", "final/bundle"))
-    ap.add_argument("--labels", default=os.environ.get("LABELS_JSON", "labels.json"))
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+ap.add_argument(
+    "--bundle",
+    default=os.environ.get(
+        "BUNDLE_DIR",
+        os.path.join(BASE_DIR, "final", "bundle")
+    )
+)
+  ap.add_argument(
+    "--labels",
+    default=os.environ.get(
+        "LABELS_JSON",
+        os.path.join(BASE_DIR, "labels.json")
+    )
+)
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=7860)
     ap.add_argument("--share", action="store_true")
